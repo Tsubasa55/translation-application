@@ -1,0 +1,255 @@
+package com.websarva.wings.android.talksample2;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.websarva.wings.android.talksample2.ml.Model;
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Locale;
+import org.tensorflow.lite.DataType;
+
+public class MainActivity3 extends AppCompatActivity implements TextToSpeech.OnInitListener {
+
+    Button camera, gallery;
+    ImageView imageView;
+    TextView result;
+    TextToSpeech tts;
+
+    int imageSize_width = 24;
+    int imageSize_height = 24;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main3);
+
+        camera = findViewById(R.id.button);
+
+        gallery = findViewById(R.id.button2);
+
+        result = findViewById(R.id.result);
+
+        imageView = findViewById(R.id.imageView);
+
+        tts = new TextToSpeech(this, this);
+        Button btn = (Button) findViewById(R.id.action_read);
+        btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (v.getId() == R.id.action_read) {
+                    speechText();
+                }
+            }
+        });
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, 3);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
+                }
+            }
+        });
+
+        gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(cameraIntent, 1);
+            }
+        });
+
+    }
+        @Override
+        public void onInit(int status) {
+            if (TextToSpeech.SUCCESS == status) {
+                Locale locale = Locale.JAPAN;
+                if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+                    tts.setLanguage(locale);
+                } else {
+                    Log.d("Error", "Locale");
+                }
+            } else {
+                Log.d("Error", "Init");
+            }
+        }
+
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+            if (null != tts) {
+                tts.shutdown();
+            }
+        }
+
+        private void speechText() {
+            TextView textView = findViewById(R.id.result);
+            String contents = textView.getText().toString();
+            if (0 < contents.length()) {
+                if (tts.isSpeaking()) {
+                    tts.stop();
+                }
+                System.out.println(contents);
+                tts.speak(contents, TextToSpeech.QUEUE_FLUSH, null);
+            }
+    }
+
+    public void classifyImage(Bitmap image) {
+        try {
+            Model model = Model.newInstance(getApplicationContext());
+
+            // Creates inputs for reference.
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 576}, DataType.FLOAT32);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize_width * imageSize_height);
+            byteBuffer.order(ByteOrder.nativeOrder());
+
+            /*
+            int[] intValues = new int[imageSize * imageSize];
+            image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
+
+            int pixel = 0;
+
+            for (int i = 0; i < imageSize; i++) {
+                for (int j = 0; j < imageSize; j++) {
+                    int val = intValues[pixel++];
+                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255));
+                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255));
+                    byteBuffer.putFloat((val & 0xFF) * (1.f / 255));
+                }
+            }
+
+            inputFeature0.loadBuffer(byteBuffer);*/
+
+            int[] intValues = new int[imageSize_height * imageSize_width];
+            image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
+
+
+
+            int pixel = 0;
+
+            for (int y = 0; y < imageSize_height * imageSize_width; y++){
+                int val = intValues[pixel++];
+                int red = ((val >> 16) & 0xFF);
+                int green = ((val >> 8) & 0xFF);
+                int blue =(val & 0xFF);
+
+                int grayValue = (int) (0.299 * red + 0.587 * green + 0.114 * blue);
+                grayValue = grayValue * (1 / 255);
+
+                byteBuffer.putFloat(grayValue);
+            }
+
+            inputFeature0.loadBuffer(byteBuffer);
+
+
+            // Runs model inference and gets result.
+            Model.Outputs outputs = model.process(inputFeature0);
+            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+
+            float[] confidences = outputFeature0.getFloatArray();
+
+            int maxPos = 0;
+            float maxConfidence = 0;
+
+            for (int i = 0; i < confidences.length; i++) {
+                if (confidences[i] > maxConfidence) {
+                    maxConfidence = confidences[i];
+                    maxPos = i;
+                }
+            }
+
+            String[] classes = {"0", "1", "2", "3", "あ", "5", "6", "7", "8","9", "4"};
+            result.setText(classes[maxPos]);
+
+            // Releases model resources if no longer used.
+            model.close();
+        } catch (IOException e) {
+            // TODO Handle the exception
+        }
+    }
+
+    boolean flag = true;
+    Matrix matrix = new Matrix();
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode == RESULT_OK) {
+            if(requestCode == 3) {
+                Bitmap image = (Bitmap) data.getExtras().get("data");
+                int dimension = Math.min(image.getWidth(), image.getHeight());
+                image = ThumbnailUtils.extractThumbnail(image, dimension, dimension);
+
+                if (flag == true) {
+                    matrix.postRotate(90);
+                    flag = false;
+                }else {
+                    matrix.postRotate(0);
+                }
+
+
+                //image = Bitmap.createScaledBitmap(image, imageSize_width, imageSize_height, false);
+                image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+
+                imageView.setImageBitmap(image);
+
+                image = Bitmap.createScaledBitmap(image, imageSize_width, imageSize_height, false);
+
+                classifyImage(image);
+            } else {
+                Uri dat = data.getData();
+                Bitmap image = null;
+                try {
+                    image =MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(flag == false) {
+                    matrix.postRotate(-90);
+                    flag = true;
+                }else{
+                    matrix.postRotate(0);
+                }
+                //image = Bitmap.createScaledBitmap(image, imageSize_width, imageSize_height, false);
+                image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+
+                imageView.setImageBitmap(image);
+
+                image = Bitmap.createScaledBitmap(image, imageSize_width, imageSize_height, false);
+
+                classifyImage(image);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public void onClick(View v) {
+        Intent intent = new Intent(this, MainActivity.class);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+}
