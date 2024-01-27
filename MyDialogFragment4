@@ -1,0 +1,49 @@
+package com.websarva.wings.android.talksample2;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+public class MyDialogFragment4 extends DialogFragment{
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
+        TextView titleView = new TextView(getActivity());
+        titleView.setText("注意");
+        titleView.setTextSize(24);
+        titleView.setTextColor(Color.BLACK);
+        titleView.setBackgroundColor(getResources().getColor(R.color.light_green));
+        titleView.setPadding(20, 20, 20, 20);
+        titleView.setGravity(Gravity.CENTER);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setCustomTitle(titleView)
+                .setMessage("出力方式を選択してください。")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        return builder.create();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AlertDialog alertDialog = (AlertDialog) getDialog();
+        if (alertDialog != null) {
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(getResources().getColor(R.color.light_green));
+        }
+    }
+    
+}
