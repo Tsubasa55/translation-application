@@ -1,0 +1,183 @@
+package com.websarva.wings.android.talksample2;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class MainActivity4 extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main4);
+
+        HelloListener listener = new HelloListener();
+
+        Button btClear = findViewById(R.id.btClear);
+
+        btClear.setOnClickListener(listener);
+
+        Button btDisplay = findViewById(R.id.btDisplay);
+
+        btDisplay.setOnClickListener(listener);
+    }
+
+    private static final int BT_CLEAR_BUTTON_ID = R.id.btClear;
+    private static final int BT_DISPLAY_BUTTON_ID = R.id.btDisplay;
+
+    private class HelloListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+
+            EditText input = findViewById(R.id.etWord);
+
+            EditText editText = findViewById(R.id.etWord);
+
+            TextView output = findViewById(R.id.etWord);
+
+            ImageView imageView = findViewById(R.id.ImageView);
+
+            String inputText = editText.getText().toString();
+
+            int id = view.getId();
+
+            if (id == BT_CLEAR_BUTTON_ID) {
+                input.setText("");
+
+                output.setText("");
+
+                imageView.setImageResource(R.drawable.aa);
+
+            } else if(id == BT_DISPLAY_BUTTON_ID) {
+                if(inputText.equals("あ")) {
+                   imageView.setImageResource(R.drawable.a);
+                } else if (inputText.equals("い")) {
+                    imageView.setImageResource(R.drawable.i);
+                } else if (inputText.equals("う")) {
+                    imageView.setImageResource(R.drawable.u);
+                } else if (inputText.equals("え")) {
+                    imageView.setImageResource(R.drawable.e);
+                } else if (inputText.equals("お")) {
+                    imageView.setImageResource(R.drawable.o);
+                } else if (inputText.equals("か")) {
+                    imageView.setImageResource(R.drawable.ka);
+                } else if (inputText.equals("き")) {
+                    imageView.setImageResource(R.drawable.ki);
+                } else if (inputText.equals("く")) {
+                    imageView.setImageResource(R.drawable.ku);
+                } else if (inputText.equals("け")) {
+                    imageView.setImageResource(R.drawable.ke);
+                } else if (inputText.equals("こ")) {
+                    imageView.setImageResource(R.drawable.ko);
+                } else if (inputText.equals("さ")) {
+                    imageView.setImageResource(R.drawable.sa);
+                } else if (inputText.equals("し")) {
+                    imageView.setImageResource(R.drawable.si);
+                } else if (inputText.equals("す")) {
+                    imageView.setImageResource(R.drawable.su);
+                } else if (inputText.equals("せ")) {
+                    imageView.setImageResource(R.drawable.se);
+                } else if (inputText.equals("そ")) {
+                    imageView.setImageResource(R.drawable.so);
+                } else if (inputText.equals("た")) {
+                    imageView.setImageResource(R.drawable.ta);
+                } else if (inputText.equals("ち")) {
+                    imageView.setImageResource(R.drawable.ti);
+                } else if (inputText.equals("つ")) {
+                    imageView.setImageResource(R.drawable.tu);
+                } else if (inputText.equals("て")) {
+                    imageView.setImageResource(R.drawable.te);
+                } else if (inputText.equals("と")) {
+                    imageView.setImageResource(R.drawable.to);
+                } else if (inputText.equals("な")) {
+                    imageView.setImageResource(R.drawable.na);
+                } else if (inputText.equals("に")) {
+                    imageView.setImageResource(R.drawable.ni);
+                } else if (inputText.equals("ぬ")) {
+                    imageView.setImageResource(R.drawable.nu);
+                } else if (inputText.equals("ね")) {
+                    imageView.setImageResource(R.drawable.ne);
+                } else if (inputText.equals("の")) {
+                    imageView.setImageResource(R.drawable.no);
+                } else if (inputText.equals("は")) {
+                    imageView.setImageResource(R.drawable.ha);
+                } else if (inputText.equals("ひ")) {
+                    imageView.setImageResource(R.drawable.hi);
+                } else if (inputText.equals("ふ")) {
+                    imageView.setImageResource(R.drawable.fu);
+                } else if (inputText.equals("へ")) {
+                    imageView.setImageResource(R.drawable.he);
+                } else if (inputText.equals("ほ")) {
+                    imageView.setImageResource(R.drawable.ho);
+                } else if (inputText.equals("ま")) {
+                    imageView.setImageResource(R.drawable.ma);
+                } else if (inputText.equals("み")) {
+                    imageView.setImageResource(R.drawable.mi);
+                } else if (inputText.equals("む")) {
+                    imageView.setImageResource(R.drawable.mu);
+                } else if (inputText.equals("め")) {
+                    imageView.setImageResource(R.drawable.me);
+                } else if (inputText.equals("も")) {
+                    imageView.setImageResource(R.drawable.mo);
+                } else if (inputText.equals("や")) {
+                    imageView.setImageResource(R.drawable.ya);
+                } else if (inputText.equals("ゆ")) {
+                    imageView.setImageResource(R.drawable.yu);
+                } else if (inputText.equals("よ")) {
+                    imageView.setImageResource(R.drawable.yo);
+                } else if (inputText.equals("ら")) {
+                    imageView.setImageResource(R.drawable.ra);
+                } else if (inputText.equals("り")) {
+                    imageView.setImageResource(R.drawable.ri);
+                } else if (inputText.equals("る")) {
+                    imageView.setImageResource(R.drawable.ru);
+                } else if (inputText.equals("れ")) {
+                    imageView.setImageResource(R.drawable.re);
+                } else if (inputText.equals("ろ")) {
+                    imageView.setImageResource(R.drawable.ro);
+                } else if (inputText.equals("わ")) {
+                    imageView.setImageResource(R.drawable.wa);
+                } else if (inputText.equals("を")) {
+                    imageView.setImageResource(R.drawable.wo);
+                } else if (inputText.equals("ん")) {
+                    imageView.setImageResource(R.drawable.n);
+                } else if (inputText.equals("御免") || inputText.equals("ごめん")) {
+                    imageView.setImageResource(R.drawable.gomenn);
+                } else if (inputText.equals("悲しい") || inputText.equals("かなしい")) {
+                    imageView.setImageResource(R.drawable.kanashii);
+                } else if (inputText.equals("怒る") || inputText.equals("おこる")) {
+                    imageView.setImageResource(R.drawable.okoru);
+                } else if (inputText.equals("面白い") || inputText.equals("おもしろい")) {
+                    imageView.setImageResource(R.drawable.omoshiroi);
+                } else if (inputText.equals("疲れた") || inputText.equals("つかれた")) {
+                    imageView.setImageResource(R.drawable.tukareta);
+                } else if (inputText.equals("つまらない")) {
+                    imageView.setImageResource(R.drawable.tumaranai);
+                } else if (inputText.equals("辛い") || inputText.equals("つらい")) {
+                    imageView.setImageResource(R.drawable.turai);
+                } else if (inputText.equals("嬉しい") || inputText.equals("うれしい")) {
+                    imageView.setImageResource(R.drawable.ureshii);
+                } else if (inputText.equals("宜しく") || inputText.equals("よろしく")) {
+                    imageView.setImageResource(R.drawable.yorosiku);
+                } else {
+                    imageView.setImageResource(R.drawable.aa);
+                }
+            }
+        }
+    }
+
+    public void onClick(View v) {
+        Intent intent = new Intent(this, MainActivity.class);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+}
